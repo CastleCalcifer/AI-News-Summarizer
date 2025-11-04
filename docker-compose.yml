@@ -1,7 +1,9 @@
 version: '3'
 services:
   collector:
-    build: ./news_collector
+    build:
+      context: .
+      dockerfile: news_collector/Dockerfile
     ports:
       - "5001:5000"
     environment:
@@ -11,7 +13,9 @@ services:
       - news-network
     
   summarizer:
-    build: ./summarizer
+    build:
+      context: .
+      dockerfile: summarizer/Dockerfile
     ports:
       - "5002:5000"
     environment:
@@ -20,7 +24,9 @@ services:
       - news-network
     
   sentiment:
-    build: ./sentiment_analyzer
+    build:
+      context: .
+      dockerfile: sentiment_analyzer/Dockerfile
     ports:
       - "5003:5000"
     networks:
