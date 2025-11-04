@@ -10,10 +10,10 @@ WORKDIR /app
 RUN pip install --no-cache-dir flask requests
 
 # Copy application code (compose will set context to repo root)
-COPY newsCollector.py /app/newsCollector.py
+COPY news_collector/app.py /app/app.py
 
 EXPOSE 5000
 
-CMD ["python", "/app/newsCollector.py"]
+CMD ["python", "/app/app.py"]
 
 

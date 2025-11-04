@@ -8,10 +8,10 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir flask requests
 
-COPY summarizer.py /app/summarizer.py
+COPY summarizer/app.py /app/app.py
 
 EXPOSE 5000
 
-CMD ["python", "/app/summarizer.py"]
+CMD ["python", "/app/app.py"]
 
 

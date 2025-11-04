@@ -9,10 +9,10 @@ WORKDIR /app
 RUN pip install --no-cache-dir flask textblob && \
     python -m textblob.download_corpora
 
-COPY sentimentAnalyzer.py /app/sentimentAnalyzer.py
+COPY sentiment_analyzer/app.py /app/app.py
 
 EXPOSE 5000
 
-CMD ["python", "/app/sentimentAnalyzer.py"]
+CMD ["python", "/app/app.py"]
 
 
