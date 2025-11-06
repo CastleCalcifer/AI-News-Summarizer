@@ -3,7 +3,7 @@ services:
   collector:
     build:
       context: .
-      dockerfile: news_collector/Dockerfile
+      dockerfile: collector/Dockerfile
     ports:
       - "5001:5000"
     environment:
@@ -11,6 +11,8 @@ services:
       - NEWS_API_KEY=${NEWS_API_KEY}
     networks:
       - news-network
+    depends_on:
+      - summarizer
     
   summarizer:
     build:
@@ -22,11 +24,13 @@ services:
       - SENTIMENT_URL=http://sentiment:5000
     networks:
       - news-network
+    depends_on:
+      - sentiment
     
   sentiment:
     build:
       context: .
-      dockerfile: sentiment_analyzer/Dockerfile
+      dockerfile: sentiment/Dockerfile
     ports:
       - "5003:5000"
     networks:

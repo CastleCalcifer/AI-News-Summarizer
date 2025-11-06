@@ -1,0 +1,7 @@
+flask==3.0.3
+requests==2.32.3
+textblob==0.17.1
+
+# Test deps
+pytest==8.2.1
+pytest-mock==3.14.0
