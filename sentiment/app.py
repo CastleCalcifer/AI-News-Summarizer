@@ -17,7 +17,11 @@ def analyze():
     for item in summaries:
         text = item.get("summary", "") or ""
         polarity = float(TextBlob(text).sentiment.polarity)
-        sentiments.append({"title": item.get("title"), "polarity": polarity})
+        sentiments.append({
+            "title": item.get("title"),
+            "polarity": polarity,
+            "source_url": item.get("source_url")
+        })
         total_polarity += polarity
 
     avg_polarity = (total_polarity / len(sentiments)) if sentiments else 0.0

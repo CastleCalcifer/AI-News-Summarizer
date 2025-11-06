@@ -9,6 +9,7 @@ services:
     environment:
       - SUMMARIZER_URL=http://summarizer:5000
       - NEWS_API_KEY=${NEWS_API_KEY}
+      - ENABLE_GET_TEST_ROUTES=${ENABLE_GET_TEST_ROUTES}
     networks:
       - news-network
     depends_on:
@@ -22,6 +23,7 @@ services:
       - "5002:5000"
     environment:
       - SENTIMENT_URL=http://sentiment:5000
+      - ENABLE_GET_TEST_ROUTES=${ENABLE_GET_TEST_ROUTES}
     networks:
       - news-network
     depends_on:
