@@ -17,7 +17,7 @@ def summarize():
     summaries = []
     
     
-    llm_url = os.getenv("LOCAL_LLM_API_URL", "http://localhost:8000/generate")
+    llm_url = os.getenv("LOCAL_LLM_API_URL", "http://localhost:11434/generate")
     sentiment_url = os.getenv("SENTIMENT_URL")
     for article in articles:
         text = article.get("description", "")
@@ -53,7 +53,7 @@ def summarize_get():
     description = request.args.get("description", "Sample description")
     source_url = request.args.get("source_url")
     # Perform the same summarization logic for a single article
-    llm_url = os.getenv("LOCAL_LLM_API_URL", "http://localhost:8000/generate")
+    llm_url = os.getenv("LOCAL_LLM_API_URL", "http://localhost:11434/generate")
     sentiment_url = os.getenv("SENTIMENT_URL")
     payload = {"prompt": f"Summarize this: {description}"}
     try:
