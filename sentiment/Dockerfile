@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir flask textblob
+RUN pip install --no-cache-dir flask textblob requests flask-cors
 
 COPY sentiment/app.py /app/app.py
 

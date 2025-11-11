@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir flask requests
+RUN pip install --no-cache-dir flask requests flask-cors
 
 COPY summarizer/app.py /app/app.py
 

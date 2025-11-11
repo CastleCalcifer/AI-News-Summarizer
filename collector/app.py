@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
 import os
 import requests
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 @app.route("/", methods=["GET"]) 
 def health():
@@ -13,7 +15,7 @@ def collect_news():
     data = request.get_json(silent=True) or {}
     topic = data.get("topic", "technology")
     api_key = os.getenv("NEWS_API_KEY")
-    summarizer_url = os.getenv("SUMMARIZER_URL")
+    # Don't auto-forward to summarizer; let the caller handle the pipeline
     enable_get = (os.getenv("ENABLE_GET_TEST_ROUTES", "0").lower() in {"1", "true", "yes"})
 
     if not api_key:
@@ -22,16 +24,7 @@ def collect_news():
             {"title": f"New Breakthroughs in {topic}", "description": "Experts see major industry shifts.", "source_url": "https://example.com/mock2"},
             {"title": f"The Future of {topic} Technology", "description": "Innovations are shaping the next decade.", "source_url": "https://example.com/mock3"},
         ]
-        if summarizer_url:
-            try:
-                fwd = requests.post(f"{summarizer_url}/summarize", json={"articles": sample_news}, timeout=10)
-                fwd.raise_for_status()
-                return jsonify(fwd.json())
-            except Exception:
-                # If forwarding fails, return local data
-                return jsonify(sample_news)
-        else:
-            return jsonify(sample_news)
+        return jsonify(sample_news)
 
     url = f"https://newsapi.org/v2/everything?q={topic}&pageSize=5&apiKey={api_key}"
     try:
@@ -47,15 +40,7 @@ def collect_news():
         for a in articles[:5]
         if a.get("title")
     ]
-    if summarizer_url:
-        try:
-            fwd = requests.post(f"{summarizer_url}/summarize", json={"articles": news_data}, timeout=10)
-            fwd.raise_for_status()
-            return jsonify(fwd.json())
-        except Exception:
-            return jsonify(news_data)
-    else:
-        return jsonify(news_data)
+    return jsonify(news_data)
 
 # Optional GET route for browser-based testing
 @app.route("/collect", methods=["GET"])
