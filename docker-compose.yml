@@ -3,14 +3,17 @@ services:
   collector:
     build:
       context: .
-      dockerfile: news_collector/Dockerfile
+      dockerfile: collector/Dockerfile
     ports:
       - "5001:5000"
     environment:
       - SUMMARIZER_URL=http://summarizer:5000
-      - NEWS_API_KEY=${NEWS_API_KEY}
+      - NEWS_API_KEY=deb021eb809442d7b296645f0b3c02d3
+      - ENABLE_GET_TEST_ROUTES=${ENABLE_GET_TEST_ROUTES}
     networks:
       - news-network
+    depends_on:
+      - summarizer
     
   summarizer:
     build:
@@ -20,13 +23,19 @@ services:
       - "5002:5000"
     environment:
       - SENTIMENT_URL=http://sentiment:5000
+      - ENABLE_GET_TEST_ROUTES=${ENABLE_GET_TEST_ROUTES}
+      # When the local LLM runs on the host at port 11434, containers should use host.docker.internal
+      - LOCAL_LLM_API_URL=http://host.docker.internal:11434/api/generate
+      - LOCAL_LLM_MODEL=llama2
     networks:
       - news-network
+    depends_on:
+      - sentiment
     
   sentiment:
     build:
       context: .
-      dockerfile: sentiment_analyzer/Dockerfile
+      dockerfile: sentiment/Dockerfile
     ports:
       - "5003:5000"
     networks:

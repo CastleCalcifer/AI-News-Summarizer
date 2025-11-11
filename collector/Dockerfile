@@ -8,10 +8,8 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir flask requests flask-cors
 
-COPY summarizer/app.py /app/app.py
+COPY collector/app.py /app/app.py
 
 EXPOSE 5000
 
 CMD ["python", "/app/app.py"]
-
-

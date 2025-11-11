@@ -6,12 +6,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir flask requests flask-cors
+RUN pip install --no-cache-dir flask textblob requests flask-cors
 
-COPY summarizer/app.py /app/app.py
+COPY sentiment/app.py /app/app.py
 
 EXPOSE 5000
 
 CMD ["python", "/app/app.py"]
-
-
