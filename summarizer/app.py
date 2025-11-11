@@ -17,15 +17,41 @@ def summarize():
     summaries = []
     
     
-    llm_url = os.getenv("LOCAL_LLM_API_URL", "http://localhost:11434/generate")
+    llm_url = os.getenv("LOCAL_LLM_API_URL", "http://localhost:8000/generate")
+    llm_model = os.getenv("LOCAL_LLM_MODEL")
     sentiment_url = os.getenv("SENTIMENT_URL")
     for article in articles:
         text = article.get("description", "")
-        payload = {"prompt": f"Summarize this: {text}"}
+        # Build flexible payload; include model if provided (useful for Ollama)
+        if llm_model:
+            payload = {"model": llm_model, "prompt": f"Summarize this: {text}"}
+        else:
+            payload = {"prompt": f"Summarize this: {text}"}
         try:
-            res = requests.post(llm_url, json=payload)
-            summary = res.json().get("summary", text[:100])
-        except:
+            res = requests.post(llm_url, json=payload, timeout=10)
+            try:
+                data = res.json()
+            except Exception:
+                data = None
+
+            summary = None
+            if isinstance(data, dict):
+                summary = data.get("summary") or data.get("result")
+                if not summary:
+                    choices = data.get("choices")
+                    if isinstance(choices, list) and choices:
+                        first = choices[0]
+                        summary = first.get("text") or (first.get("message", {}).get("content") if isinstance(first.get("message"), dict) else None)
+                if not summary and "output" in data:
+                    out = data.get("output")
+                    if isinstance(out, str):
+                        summary = out
+                    elif isinstance(out, list) and out:
+                        summary = " ".join([str(x) for x in out])
+            if not summary:
+                text_body = res.text or ""
+                summary = text_body.strip() or text[:100]
+        except Exception:
             summary = text[:100] # fallback
         summaries.append({
             "title": article["title"],
@@ -53,12 +79,35 @@ def summarize_get():
     description = request.args.get("description", "Sample description")
     source_url = request.args.get("source_url")
     # Perform the same summarization logic for a single article
-    llm_url = os.getenv("LOCAL_LLM_API_URL", "http://localhost:11434/generate")
+    llm_url = os.getenv("LOCAL_LLM_API_URL", "http://localhost:8000/generate")
+    llm_model = os.getenv("LOCAL_LLM_MODEL")
     sentiment_url = os.getenv("SENTIMENT_URL")
-    payload = {"prompt": f"Summarize this: {description}"}
+    if llm_model:
+        payload = {"model": llm_model, "prompt": f"Summarize this: {description}"}
+    else:
+        payload = {"prompt": f"Summarize this: {description}"}
     try:
-        res = requests.post(llm_url, json=payload)
-        summary = res.json().get("summary", description[:100])
+        res = requests.post(llm_url, json=payload, timeout=10)
+        try:
+            data = res.json()
+        except Exception:
+            data = None
+        summary = None
+        if isinstance(data, dict):
+            summary = data.get("summary") or data.get("result")
+            if not summary:
+                choices = data.get("choices")
+                if isinstance(choices, list) and choices:
+                    first = choices[0]
+                    summary = first.get("text") or (first.get("message", {}).get("content") if isinstance(first.get("message"), dict) else None)
+            if not summary and "output" in data:
+                out = data.get("output")
+                if isinstance(out, str):
+                    summary = out
+                elif isinstance(out, list) and out:
+                    summary = " ".join([str(x) for x in out])
+        if not summary:
+            summary = (res.text or "").strip() or description[:100]
     except Exception:
         summary = description[:100]
     summaries = [{"title": title, "summary": summary, "source_url": source_url}]

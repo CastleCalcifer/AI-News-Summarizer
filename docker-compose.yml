@@ -25,7 +25,7 @@ services:
       - SENTIMENT_URL=http://sentiment:5000
       - ENABLE_GET_TEST_ROUTES=${ENABLE_GET_TEST_ROUTES}
       # When the local LLM runs on the host at port 11434, containers should use host.docker.internal
-      - LOCAL_LLM_API_URL=http://host.docker.internal:11434/generate
+  - LOCAL_LLM_API_URL=http://host.docker.internal:11434/api/generate
     networks:
       - news-network
     depends_on:
