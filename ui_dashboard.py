@@ -247,6 +247,7 @@ HTML_TEMPLATE = """
                 });
                 const data = await resp.json();
                 lastSummarized = data;
+                // Display as JSON (keeping detail for debugging summarizer)
                 showOutput('summarizeOutput', JSON.stringify(data, null, 2));
             } catch (e) {
                 showOutput('summarizeOutput', '❌ Error: ' + e.message, true);
@@ -309,18 +310,15 @@ HTML_TEMPLATE = """
                 });
                 const summaries = await sResp.json();
                 
-                let finalResult = summaries;
-                if (!summaries.overall_tone) {
-                    showOutput('pipelineOutput', '📰 Collected ' + articles.length + ' articles\\n✍️ Summarized ' + summaries.length + ' articles\\n💭 Step 3: Analyzing sentiment...');
-                    const aResp = await fetch('{{ sentiment_url }}/analyze', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ summaries })
-                    });
-                    finalResult = await aResp.json();
-                }
+                showOutput('pipelineOutput', '📰 Collected ' + articles.length + ' articles\\n✍️ Summarized ' + summaries.length + ' articles\\n💭 Step 3: Analyzing sentiment...');
+                const aResp = await fetch('{{ sentiment_url }}/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ summaries, topic })
+                });
+                const sentimentData = await aResp.json();
                 
-                showOutput('pipelineOutput', '✅ Pipeline Complete!\\n\\n' + JSON.stringify(finalResult, null, 2));
+                showOutput('pipelineOutput', '✅ Pipeline Complete!\\n\\n' + sentimentData.message);
             } catch (e) {
                 showOutput('pipelineOutput', '❌ Error: ' + e.message, true);
             }

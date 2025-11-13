@@ -87,17 +87,9 @@ def summarize():
             except Exception:
                 pass
         
-    
-    
-    if sentiment_url:
-        try:
-            fwd = requests.post(f"{sentiment_url}/analyze", json={"summaries": summaries}, timeout=10)
-            fwd.raise_for_status()
-            return jsonify(fwd.json())
-        except Exception:
-            return jsonify(summaries)
-    else:
-        return jsonify(summaries)
+    # Return the summaries without auto-forwarding to sentiment
+    # The UI dashboard will handle calling sentiment separately
+    return jsonify(summaries)
 
 # Optional GET route for browser-based testing
 @app.route("/summarize", methods=["GET"]) 
@@ -145,15 +137,8 @@ def summarize_get():
     except Exception:
         summary = description[:100]
     summaries = [{"title": title, "summary": summary, "source_url": source_url}]
-    if sentiment_url:
-        try:
-            fwd = requests.post(f"{sentiment_url}/analyze", json={"summaries": summaries}, timeout=10)
-            fwd.raise_for_status()
-            return jsonify(fwd.json())
-        except Exception:
-            return jsonify(summaries)
-    else:
-        return jsonify(summaries)
+    # Return summaries without auto-forwarding to sentiment
+    return jsonify(summaries)
 
 
 if __name__ == "__main__":

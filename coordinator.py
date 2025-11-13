@@ -53,7 +53,7 @@ def run_pipeline(topic, collector_url, summarizer_url, sentiment_url):
         return 0
 
     print("3) Analyzing sentiment")
-    analysis = post(f"{sentiment_url}/analyze", {"summaries": summaries})
+    analysis = post(f"{sentiment_url}/analyze", {"summaries": summaries, "topic": topic})
     if analysis is None:
         print("Analyze step failed. Exiting.")
         return 1

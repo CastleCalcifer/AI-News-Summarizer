@@ -32,7 +32,13 @@ def analyze():
     avg_polarity = (total_polarity / len(sentiments)) if sentiments else 0.0
     mood = "positive" if avg_polarity > 0.1 else "negative" if avg_polarity < -0.1 else "neutral"
 
-    return jsonify({"analysis": sentiments, "overall_tone": mood, "average_polarity": avg_polarity})
+    # Extract topic from request if available, otherwise use generic term
+    topic = data.get("topic", "this topic")
+    
+    # Simple, user-friendly message
+    sentiment_message = f"News about {topic} is currently: {mood} 📊"
+
+    return jsonify({"message": sentiment_message, "mood": mood, "average_polarity": round(avg_polarity, 2)})
 
 
 @app.route("/summarizer", methods=["GET"])
